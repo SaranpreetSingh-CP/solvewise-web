@@ -1,52 +1,14 @@
-/**
- * Create a minimal chat application:
- *
- * Requirements:
- * - Maintain messages state as array
- *   Each message should have:
- *   { role: "user" | "assistant", content: string }
- *
- * - Render list of messages
- * - Include ChatInput component
- * - On send:
- *    1. Add user message immediately
- *    2. Call sendMessageToChatAPI
- *    3. Add assistant response
- *    4. Handle loading state
- *    5. Handle errors
- */
-
-/**
- * Add loading state:
- * - While waiting for API response:
- *    Disable input
- *    Show "Typing..." message
- * - Remove typing indicator when response arrives
- */
-
-import { useEffect, useMemo, useRef, useState } from "react";
+import { useState } from "react";
 import ChatWindow from "./components/ChatWindow";
 import { getWelcomeMessage } from "./constants/chatConstants";
-import { sendMessageToApi } from "./services/chatApi";
+import { sendMessageToChatAPI } from "./services/chatApi";
 
 function App() {
 	const [messages, setMessages] = useState([getWelcomeMessage()]);
-	const [input, setInput] = useState("");
 	const [isTyping, setIsTyping] = useState(false);
-	const bottomRef = useRef(null);
 
-	const canSend = useMemo(
-		() => input.trim().length > 0 && !isTyping,
-		[input, isTyping],
-	);
-
-	useEffect(() => {
-		bottomRef.current?.scrollIntoView({ behavior: "smooth", block: "end" });
-	}, [messages, isTyping]);
-
-	const handleSend = async (prompt) => {
-		const messageText = prompt ?? input;
-		if (!messageText.trim()) return;
+	const handleSend = async (messageText) => {
+		if (!messageText?.trim()) return;
 
 		const userMessage = {
 			id: `user-${Date.now()}`,
@@ -59,43 +21,54 @@ function App() {
 		};
 
 		setMessages((prev) => [...prev, userMessage]);
-		setInput("");
 		setIsTyping(true);
 
-		const reply = await sendMessageToApi(messageText);
+		try {
+			const data = await sendMessageToChatAPI(messageText);
+			debugger;
+			const hasStructuredAnswer =
+				data &&
+				(typeof data.final_answer === "string" ||
+					Array.isArray(data.steps) ||
+					typeof data.explanation === "string");
+			const reply = hasStructuredAnswer
+				? data
+				: data?.reply ||
+					data?.message ||
+					data?.content ||
+					"I received your message, but I couldn't parse a response.";
 
-		const assistantMessage = {
-			id: `assistant-${Date.now()}`,
-			role: "assistant",
-			content: reply,
-			time: new Date().toLocaleTimeString([], {
-				hour: "2-digit",
-				minute: "2-digit",
-			}),
-		};
+			const assistantMessage = {
+				id: `assistant-${Date.now()}`,
+				role: "assistant",
+				content: reply,
+				time: new Date().toLocaleTimeString([], {
+					hour: "2-digit",
+					minute: "2-digit",
+				}),
+			};
 
-		setMessages((prev) => [...prev, assistantMessage]);
-		setIsTyping(false);
-	};
+			setMessages((prev) => [...prev, assistantMessage]);
+		} catch (error) {
+			debugger;
+			const errorMessage = {
+				id: `assistant-error-${Date.now()}`,
+				role: "assistant",
+				content: error,
+				time: new Date().toLocaleTimeString([], {
+					hour: "2-digit",
+					minute: "2-digit",
+				}),
+			};
 
-	const handleKeyDown = (event) => {
-		if (event.key === "Enter" && !event.shiftKey) {
-			event.preventDefault();
-			if (canSend) handleSend();
+			setMessages((prev) => [...prev, errorMessage]);
+		} finally {
+			setIsTyping(false);
 		}
 	};
 
 	return (
-		<ChatWindow
-			messages={messages}
-			isTyping={isTyping}
-			onSend={handleSend}
-			inputValue={input}
-			onInputChange={(event) => setInput(event.target.value)}
-			onKeyDown={handleKeyDown}
-			canSend={canSend}
-			bottomRef={bottomRef}
-		/>
+		<ChatWindow messages={messages} isTyping={isTyping} onSend={handleSend} />
 	);
 }
 

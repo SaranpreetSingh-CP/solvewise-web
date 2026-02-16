@@ -1,7 +1,4 @@
-/**
- * Auto-scroll chat window to bottom
- * whenever messages update
- */
+import { useEffect, useRef } from "react";
 
 import {
 	Avatar,
@@ -13,7 +10,13 @@ import {
 	Stack,
 	Typography,
 } from "@mui/material";
-import { AutoAwesome } from "@mui/icons-material";
+import {
+	AutoAwesome,
+	MenuBook,
+	Psychology,
+	Science,
+	School,
+} from "@mui/icons-material";
 import {
 	BrandBadge,
 	ChatArea,
@@ -30,16 +33,28 @@ import { quickPrompts, subjects } from "../constants/chatConstants";
 import ChatInput from "./ChatInput";
 import MessageBubble from "./MessageBubble";
 
-function ChatWindow({
-	messages,
-	isTyping,
-	onSend,
-	inputValue,
-	onInputChange,
-	onKeyDown,
-	canSend,
-	bottomRef,
-}) {
+function ChatWindow({ messages, isTyping, onSend }) {
+	const getSubjectIcon = (iconName) => {
+		switch (iconName) {
+			case "school":
+				return <School fontSize="small" />;
+			case "science":
+				return <Science fontSize="small" />;
+			case "psychology":
+				return <Psychology fontSize="small" />;
+			case "menuBook":
+				return <MenuBook fontSize="small" />;
+			default:
+				return null;
+		}
+	};
+
+	const bottomRef = useRef(null);
+
+	useEffect(() => {
+		bottomRef.current?.scrollIntoView({ behavior: "smooth", block: "end" });
+	}, [messages, isTyping]);
+
 	return (
 		<Page>
 			<Shell>
@@ -74,7 +89,7 @@ function ChatWindow({
 									key={subject.label}
 									variant="outlined"
 									color="inherit"
-									startIcon={subject.icon}
+									startIcon={getSubjectIcon(subject.iconName)}
 									onClick={() =>
 										onSend(`Teach me ${subject.label.toLowerCase()}.`)
 									}
@@ -138,7 +153,12 @@ function ChatWindow({
 
 					<Messages>
 						{messages.map((message) => (
-							<MessageBubble key={message.id} message={message} />
+							<MessageBubble
+								key={message.id}
+								role={message.role}
+								content={message.content}
+								time={message.time}
+							/>
 						))}
 
 						{isTyping && (
@@ -157,14 +177,7 @@ function ChatWindow({
 						<div ref={bottomRef} />
 					</Messages>
 
-					<ChatInput
-						value={inputValue}
-						onChange={onInputChange}
-						onSend={onSend}
-						onKeyDown={onKeyDown}
-						disabled={isTyping}
-						canSend={canSend}
-					/>
+					<ChatInput onSend={onSend} disabled={isTyping} />
 				</ChatArea>
 			</Shell>
 		</Page>

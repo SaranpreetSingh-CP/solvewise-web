@@ -1,10 +1,8 @@
-import { MenuBook, Psychology, Science, School } from "@mui/icons-material";
-
 export const subjects = [
-	{ label: "Mathematics", icon: <School fontSize="small" /> },
-	{ label: "Science", icon: <Science fontSize="small" /> },
-	{ label: "Psychology", icon: <Psychology fontSize="small" /> },
-	{ label: "Literature", icon: <MenuBook fontSize="small" /> },
+	{ label: "Mathematics", iconName: "school" },
+	{ label: "Science", iconName: "science" },
+	{ label: "Psychology", iconName: "psychology" },
+	{ label: "Literature", iconName: "menuBook" },
 ];
 
 export const quickPrompts = [

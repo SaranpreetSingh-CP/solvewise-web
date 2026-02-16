@@ -18,6 +18,7 @@ export const Page = styled.div`
 export const Shell = styled.div`
 	width: min(1200px, 100%);
 	height: min(86vh, 920px);
+	min-height: 0;
 	background: #ffffff;
 	border-radius: 28px;
 	overflow: hidden;
@@ -50,6 +51,7 @@ export const ChatArea = styled.div`
 	display: flex;
 	flex-direction: column;
 	height: 100%;
+	min-height: 0;
 	background: #f8fafc;
 `;
 
@@ -65,6 +67,7 @@ export const Header = styled.div`
 
 export const Messages = styled.div`
 	flex: 1;
+	min-height: 0;
 	overflow-y: auto;
 	padding: 24px 28px;
 	display: flex;

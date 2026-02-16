@@ -1,22 +1,7 @@
-/**
- * Create ChatInput component:
- *
- * Props:
- * - onSend(message)
- * - disabled (boolean)
- *
- * Features:
- * - Controlled input field
- * - Submit on button click
- * - Submit on Enter key
- * - Clear input after send
- */
-
 import { useState } from "react";
 import { Box, IconButton, Stack, TextField, Typography } from "@mui/material";
 import { Send } from "@mui/icons-material";
 import { InputArea } from "../styles/chatStyles";
-
 
 function ChatInput({ onSend, disabled }) {
 	const [inputValue, setInputValue] = useState("");
