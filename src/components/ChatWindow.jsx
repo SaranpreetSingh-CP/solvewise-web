@@ -33,7 +33,7 @@ import { quickPrompts, subjects } from "../constants/chatConstants";
 import ChatInput from "./ChatInput";
 import MessageBubble from "./MessageBubble";
 
-function ChatWindow({ messages, isTyping, onSend }) {
+function ChatWindow({ history, isTyping, onSend, currentTopic }) {
 	const getSubjectIcon = (iconName) => {
 		switch (iconName) {
 			case "school":
@@ -53,7 +53,7 @@ function ChatWindow({ messages, isTyping, onSend }) {
 
 	useEffect(() => {
 		bottomRef.current?.scrollIntoView({ behavior: "smooth", block: "end" });
-	}, [messages, isTyping]);
+	}, [history, isTyping]);
 
 	return (
 		<Page>
@@ -144,6 +144,23 @@ function ChatWindow({ messages, isTyping, onSend }) {
 							<Typography variant="body2" color="#64748b">
 								Get structured explanations, examples, and practice.
 							</Typography>
+							{currentTopic ? (
+								<Typography
+									variant="subtitle2"
+									color="#64748b"
+									sx={{ mt: 0.5 }}
+								>
+									Current Topic: {currentTopic}
+								</Typography>
+							) : (
+								<Typography
+									variant="subtitle2"
+									color="#64748b"
+									sx={{ mt: 0.5 }}
+								>
+									Tell me a math topic to begin.
+								</Typography>
+							)}
 						</Box>
 						<Box display="flex" alignItems="center" gap={1}>
 							<Chip label="Online" color="success" size="small" />
@@ -152,13 +169,22 @@ function ChatWindow({ messages, isTyping, onSend }) {
 					</Header>
 
 					<Messages>
-						{messages.map((message) => (
+						{!currentTopic && history.length === 0 && (
 							<MessageBubble
-								key={message.id}
-								role={message.role}
-								content={message.content}
-								time={message.time}
+								role="assistant"
+								content="Hi! Please tell me the math topic you want to start with."
 							/>
+						)}
+						{history.map((item, index) => (
+							<Box
+								key={`${item.userQuestion}-${index}`}
+								display="flex"
+								flexDirection="column"
+								gap={2}
+							>
+								<MessageBubble role="user" content={item.userQuestion} />
+								<MessageBubble role="assistant" content={item.tutorResponse} />
+							</Box>
 						))}
 
 						{isTyping && (
