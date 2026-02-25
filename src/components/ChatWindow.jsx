@@ -1,22 +1,7 @@
 import { useEffect, useRef } from "react";
 
-import {
-	Avatar,
-	Box,
-	Button,
-	Chip,
-	CircularProgress,
-	Divider,
-	Stack,
-	Typography,
-} from "@mui/material";
-import {
-	AutoAwesome,
-	MenuBook,
-	Psychology,
-	Science,
-	School,
-} from "@mui/icons-material";
+import { Avatar, Box, Chip, CircularProgress, Typography } from "@mui/material";
+import { AutoAwesome } from "@mui/icons-material";
 import {
 	BrandBadge,
 	ChatArea,
@@ -27,28 +12,11 @@ import {
 	Page,
 	Shell,
 	Sidebar,
-	StyledChip,
 } from "../styles/chatStyles";
-import { quickPrompts, subjects } from "../constants/chatConstants";
 import ChatInput from "./ChatInput";
 import MessageBubble from "./MessageBubble";
 
-function ChatWindow({ history, isTyping, onSend, currentTopic }) {
-	const getSubjectIcon = (iconName) => {
-		switch (iconName) {
-			case "school":
-				return <School fontSize="small" />;
-			case "science":
-				return <Science fontSize="small" />;
-			case "psychology":
-				return <Psychology fontSize="small" />;
-			case "menuBook":
-				return <MenuBook fontSize="small" />;
-			default:
-				return null;
-		}
-	};
-
+function ChatWindow({ history, isTyping, onSend }) {
 	const bottomRef = useRef(null);
 
 	useEffect(() => {
@@ -78,61 +46,6 @@ function ChatWindow({ history, isTyping, onSend, currentTopic }) {
 							</Box>
 						</BrandBadge>
 					</Box>
-
-					<Box>
-						<Typography variant="subtitle1" fontWeight={600} gutterBottom>
-							Subjects
-						</Typography>
-						<Stack spacing={1.2}>
-							{subjects.map((subject) => (
-								<Button
-									key={subject.label}
-									variant="outlined"
-									color="inherit"
-									startIcon={getSubjectIcon(subject.iconName)}
-									onClick={() =>
-										onSend(`Teach me ${subject.label.toLowerCase()}.`)
-									}
-									sx={{
-										justifyContent: "flex-start",
-										borderColor: "rgba(148,163,184,0.35)",
-										color: "#e2e8f0",
-										textTransform: "none",
-										"&:hover": {
-											borderColor: "#38bdf8",
-											background: "rgba(56,189,248,0.1)",
-										},
-									}}
-								>
-									{subject.label}
-								</Button>
-							))}
-						</Stack>
-					</Box>
-
-					<Divider sx={{ borderColor: "rgba(148,163,184,0.2)" }} />
-
-					<Box>
-						<Typography variant="subtitle1" fontWeight={600} gutterBottom>
-							Quick prompts
-						</Typography>
-						<Stack spacing={1}>
-							{quickPrompts.map((prompt) => (
-								<StyledChip
-									key={prompt}
-									label={prompt}
-									onClick={() => onSend(prompt)}
-									variant="outlined"
-								/>
-							))}
-						</Stack>
-					</Box>
-
-					<Box mt="auto">
-						<Typography variant="caption" color="rgba(226,232,240,0.6)">
-							Tip: Ask for summaries, quizzes, or study plans.
-						</Typography>
-					</Box>
 				</Sidebar>
 
 				<ChatArea>
@@ -144,23 +57,9 @@ function ChatWindow({ history, isTyping, onSend, currentTopic }) {
 							<Typography variant="body2" color="#64748b">
 								Get structured explanations, examples, and practice.
 							</Typography>
-							{currentTopic ? (
-								<Typography
-									variant="subtitle2"
-									color="#64748b"
-									sx={{ mt: 0.5 }}
-								>
-									Current Topic: {currentTopic}
-								</Typography>
-							) : (
-								<Typography
-									variant="subtitle2"
-									color="#64748b"
-									sx={{ mt: 0.5 }}
-								>
-									Tell me a math topic to begin.
-								</Typography>
-							)}
+							<Typography variant="subtitle2" color="#64748b" sx={{ mt: 0.5 }}>
+								Start by typing a math topic (e.g., fractions).
+							</Typography>
 						</Box>
 						<Box display="flex" alignItems="center" gap={1}>
 							<Chip label="Online" color="success" size="small" />
@@ -169,15 +68,9 @@ function ChatWindow({ history, isTyping, onSend, currentTopic }) {
 					</Header>
 
 					<Messages>
-						{!currentTopic && history.length === 0 && (
-							<MessageBubble
-								role="assistant"
-								content="Hi! Please tell me the math topic you want to start with."
-							/>
-						)}
 						{history.map((item, index) => (
 							<Box
-								key={`${item.userQuestion}-${index}`}
+								key={item.id ?? `${item.userQuestion}-${index}`}
 								display="flex"
 								flexDirection="column"
 								gap={2}
@@ -187,19 +80,6 @@ function ChatWindow({ history, isTyping, onSend, currentTopic }) {
 							</Box>
 						))}
 
-						{isTyping && (
-							<MessageRow $role="assistant">
-								<Avatar sx={{ bgcolor: "#2563eb", width: 34, height: 34 }}>
-									<AutoAwesome fontSize="small" />
-								</Avatar>
-								<StyledMessageBubble $role="assistant">
-									<Box display="flex" alignItems="center" gap={1}>
-										<CircularProgress size={16} />
-										<Typography variant="body2">Thinking...</Typography>
-									</Box>
-								</StyledMessageBubble>
-							</MessageRow>
-						)}
 						<div ref={bottomRef} />
 					</Messages>
 

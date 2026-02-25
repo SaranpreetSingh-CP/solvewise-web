@@ -62,6 +62,7 @@ function MessageBubble({ role, content, time }) {
 	const isObjectPayload = parsedPayload && typeof parsedPayload === "object";
 	const isLesson = isObjectPayload && parsedPayload.type === "lesson";
 	const isError = isObjectPayload && parsedPayload.type === "error";
+	const isPending = isObjectPayload && parsedPayload.type === "pending";
 	const isPractice =
 		isObjectPayload &&
 		(parsedPayload.type === "practice" ||
@@ -85,7 +86,11 @@ function MessageBubble({ role, content, time }) {
 				alignItems={isUser ? "flex-end" : "flex-start"}
 			>
 				<StyledMessageBubble $role={role}>
-					{!isUser && isLesson ? (
+					{!isUser && isPending ? (
+						<Typography variant="body1" color="#94a3b8">
+							Thinking...
+						</Typography>
+					) : !isUser && isLesson ? (
 						<Box display="flex" flexDirection="column" gap={2}>
 							<Box>
 								<Typography variant="subtitle2" color="#64748b">
@@ -95,6 +100,16 @@ function MessageBubble({ role, content, time }) {
 									{parsedPayload.topic}
 								</Typography>
 							</Box>
+							{parsedPayload.difficulty && (
+								<Box>
+									<Typography variant="subtitle2" color="#64748b">
+										Difficulty
+									</Typography>
+									<Typography variant="body1">
+										{parsedPayload.difficulty}
+									</Typography>
+								</Box>
+							)}
 							{Array.isArray(parsedPayload.concepts) &&
 								parsedPayload.concepts.length > 0 && (
 									<Box>
@@ -186,16 +201,6 @@ function MessageBubble({ role, content, time }) {
 											</Box>
 										))}
 									</Box>
-								</Box>
-							)}
-							{parsedPayload.explanation && (
-								<Box>
-									<Typography variant="subtitle2" color="#64748b">
-										Explanation
-									</Typography>
-									<Typography variant="body1" sx={{ whiteSpace: "pre-line" }}>
-										{parsedPayload.explanation}
-									</Typography>
 								</Box>
 							)}
 						</Box>

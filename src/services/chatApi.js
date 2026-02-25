@@ -1,8 +1,7 @@
-export const sendMessageToChatAPI = async ({ sessionId, topic, message }) => {
+export const sendMessageToChatAPI = async ({ sessionId, message }) => {
 	const payload = {
 		sessionId,
 		message,
-		...(topic ? { topic } : {}),
 	};
 
 	const endpoint = "http://localhost:3000/chat";
@@ -34,6 +33,7 @@ export const sendMessageToChatAPI = async ({ sessionId, topic, message }) => {
 		typeof data === "object" &&
 		data.type === "lesson" &&
 		typeof data.topic === "string" &&
+		typeof data.difficulty === "string" &&
 		Array.isArray(data.concepts) &&
 		Array.isArray(data.examples);
 	const isPractice =
@@ -41,8 +41,7 @@ export const sendMessageToChatAPI = async ({ sessionId, topic, message }) => {
 		typeof data === "object" &&
 		(data.type === "practice" || data.type === undefined) &&
 		typeof data.final_answer === "string" &&
-		Array.isArray(data.steps) &&
-		typeof data.explanation === "string";
+		Array.isArray(data.steps);
 
 	if (!isLesson && !isPractice) {
 		throw new Error("Invalid response format from server.");
