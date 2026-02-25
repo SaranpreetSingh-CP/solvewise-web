@@ -139,3 +139,10 @@ Build a professional learning chatbot that delivers lesson content and guided pr
   - chatStyles.js
 - src/constants/
   - chatConstants.js
+
+Phase 0 — Core LLM Engine (Backend: ✔ partial)
+Phase 1 — Interactive Tutor MVP (Backend: △, Frontend: ◻)
+Phase 2 — Streaming & Interruption (Not started)
+Phase 3 — Document/RAG (Not started)
+Phase 4 — Visual/Diagram Support (Not started)
+Phase 5 — Analytics & Mastery (Not started)

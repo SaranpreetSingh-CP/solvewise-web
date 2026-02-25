@@ -16,12 +16,12 @@ import {
 import ChatInput from "./ChatInput";
 import MessageBubble from "./MessageBubble";
 
-function ChatWindow({ history, isTyping, onSend }) {
+function ChatWindow({ history, isStreaming, streamedText, onSend }) {
 	const bottomRef = useRef(null);
 
 	useEffect(() => {
 		bottomRef.current?.scrollIntoView({ behavior: "smooth", block: "end" });
-	}, [history, isTyping]);
+	}, [history, isStreaming, streamedText]);
 
 	return (
 		<Page>
@@ -83,7 +83,7 @@ function ChatWindow({ history, isTyping, onSend }) {
 						<div ref={bottomRef} />
 					</Messages>
 
-					<ChatInput onSend={onSend} disabled={isTyping} />
+					<ChatInput onSend={onSend} disabled={isStreaming} />
 				</ChatArea>
 			</Shell>
 		</Page>
